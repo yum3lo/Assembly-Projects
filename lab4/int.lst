@@ -1,0 +1,67 @@
+     1                                  section .data
+     2 00000000 456E74657220746865-         prompt_msg: db 'Enter the first integer: ', 0       ; Null-terminated string for first prompt message
+     2 00000009 20666972737420696E-
+     2 00000012 74656765723A2000   
+     3 0000001A 456E74657220746865-         prompt_msg2: db 'Enter the second integer: ', 0     ; Null-terminated string for second prompt message
+     3 00000023 207365636F6E642069-
+     3 0000002C 6E74656765723A2000 
+     4 00000035 54686520726573756C-         result_msg: db 'The result is: ', 0                 ; Null-terminated string for result message
+     4 0000003E 742069733A2000     
+     5 00000045 256400                      int_format: db '%d', 0                              ; Format string for reading and printing integers
+     6                                  
+     7                                  section .bss
+     8 00000000 <res 00000004>              input_value1: resd 1    ; Reserve space for the first input value
+     9 00000004 <res 00000004>              input_value2: resd 1    ; Reserve space for the second input value
+    10 00000008 <res 00000004>              result: resd 1          ; Reserve space for the result
+    11                                  
+    12                                  section .text
+    13                                      extern  _printf
+    14                                      extern  _scanf
+    15                                  
+    16                                      global _main
+    17                                  
+    18                                  _main:
+    19                                      ; Display first prompt message
+    20 00000000 68[00000000]                push    dword prompt_msg
+    21 00000005 E8(00000000)                call    _printf
+    22 0000000A 83C404                      add     esp, 4                           ; Clean up the stack
+    23                                  
+    24                                      ; Read first input integer
+    25 0000000D 8D05[00000000]              lea     eax, [input_value1]
+    26 00000013 50                          push    eax
+    27 00000014 68[45000000]                push    dword int_format                  ; Push format string for reading integer ("%d")
+    28 00000019 E8(00000000)                call    _scanf
+    29 0000001E 83C408                      add     esp, 8                           ; Clean up the stack
+    30                                  
+    31                                      ; Display second prompt message
+    32 00000021 68[1A000000]                push    dword prompt_msg2
+    33 00000026 E8(00000000)                call    _printf
+    34 0000002B 83C404                      add     esp, 4                           ; Clean up the stack
+    35                                  
+    36                                      ; Read second input integer
+    37 0000002E 8D05[04000000]              lea     eax, [input_value2]
+    38 00000034 50                          push    eax
+    39 00000035 68[45000000]                push    dword int_format                  ; Push format string for reading integer ("%d")
+    40 0000003A E8(00000000)                call    _scanf
+    41 0000003F 83C408                      add     esp, 8                           ; Clean up the stack
+    42                                  
+    43                                      ; Add the two values
+    44 00000042 A1[00000000]                mov     eax, [input_value1]
+    45 00000047 0305[04000000]              add     eax, [input_value2]
+    46 0000004D A3[08000000]                mov     [result], eax
+    47                                  
+    48                                      ; Display result message
+    49 00000052 68[35000000]                push    dword result_msg
+    50 00000057 E8(00000000)                call    _printf
+    51 0000005C 83C404                      add     esp, 4                           ; Clean up the stack
+    52                                  
+    53                                      ; Print the result
+    54 0000005F A1[08000000]                mov     eax, [result]
+    55 00000064 50                          push    eax
+    56 00000065 68[45000000]                push    dword int_format                  ; Push format string for printing integer ("%d")
+    57 0000006A E8(00000000)                call    _printf
+    58 0000006F 83C408                      add     esp, 8                           ; Clean up the stack
+    59                                  
+    60                                      ; Exit program
+    61 00000072 B800000000                  mov     eax, 0
+    62 00000077 C3                          ret
